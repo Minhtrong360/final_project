@@ -1,22 +1,24 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const commentSchema = Schema(
+const storySchema = Schema(
   {
-    content: { type: String, require: true },
-    image: { type: String, default: "" },
+    title: { type: String, require: true },
+    cover: { type: String, default: "" },
     author: { type: Schema.Types.ObjectId, require: true, ref: "User" },
-    post: { type: Schema.Types.ObjectId, require: true, ref: "Post" },
-    reaction: {
+    genres: { type: String, require: true },
+    summaries: { type: String, require: true },
+
+    isDelete: { type: Boolean, default: false, select: false },
+    chaptertCount: { type: Number, default: 0 },
+    reactions: {
       like: { type: Number, default: 0 },
       dislike: { type: Number, default: 0 },
     },
-
-    isDelete: { type: Boolean, default: false, select: false },
   },
   { timestamps: true }
 );
 
-const Comment = mongoose.model("Comment", commentSchema);
+const Story = mongoose.model("Story", storySchema);
 
-module.exports = Comment;
+module.exports = Story;

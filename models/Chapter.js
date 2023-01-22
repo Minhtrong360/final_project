@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const friendSchema = Schema(
+const chapterSchema = Schema(
   {
-    from: { type: Schema.Types.ObjectId, require: true, ref: "User" },
-    to: { type: Schema.Types.ObjectId, require: true, ref: "User" },
-    status: { type: String, enum: ["pending", "accepted", "declined"] },
+    number: { type: Number, require: true },
+    name: { type: String, require: true },
+    content: { type: String, require: true },
+    ofStory: { type: Schema.Types.ObjectId, require: true, ref: "Story" },
   },
   { timestamps: true }
 );
 
-const Friend = mongoose.model("Friend", friendSchema);
+const Chapter = mongoose.model("Chapter", chapterSchema);
 
-module.exports = Friend;
+module.exports = Chapter;

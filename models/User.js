@@ -8,6 +8,8 @@ const userSchema = Schema(
     name: { type: String, require: true },
     email: { type: String, require: true, unique: true },
     password: { type: String, require: true, select: false },
+    avatar: { type: String, require: false, default: "" },
+    cover: { type: String, require: false, default: "" },
     gender: {
       type: String,
       require: false,
@@ -20,9 +22,10 @@ const userSchema = Schema(
 
     isDelete: { type: Boolean, default: false, select: false },
 
-    subcription: { type: Schema.Types.ObjectId, ref: "Subcription" },
+    // subcription: { type: Schema.Types.ObjectId, ref: "Subscription" },
 
     storyCount: { type: Number, default: 0 },
+    stories: { type: Schema.Types.ObjectId, require: true, ref: "Story" },
   },
   { timestamps: true }
 );
