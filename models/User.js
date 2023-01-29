@@ -22,7 +22,7 @@ const userSchema = Schema(
 
     isDelete: { type: Boolean, default: false, select: false },
 
-    // subcription: { type: Schema.Types.ObjectId, ref: "Subscription" },
+    subscription: { type: Schema.Types.ObjectId, ref: "Subscription" },
 
     storyCount: { type: Number, default: 0 },
     stories: { type: Schema.Types.ObjectId, require: true, ref: "Story" },

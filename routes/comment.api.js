@@ -8,20 +8,22 @@ const validators = require("../middlewares/validators");
 /**
  * @route POST /comments
  * @description Create a new comment
- * @body {content, image, postId}
+ * @body {targetType: 'Story' or 'Chapter', targetId, content}
  * @access Login required
  */
 router.post(
   "/",
   authentication.loginRequired,
   validators.validate([
-    body("content", "Missing content").exists().notEmpty(),
-    body("postId", "Invalid ObjectId")
+    body("targetType", "Invalid targetType")
       .exists()
-      .isString()
+      .isIn(["Story", "Chapter"]),
+    body("targetId", "Invalid targetId")
+      .exists()
       .custom(validators.checkObjectId),
+    body("content", "Invalid content").exists().notEmpty(),
   ]),
-  commentController.createNewComment
+  commentController.saveComment
 );
 
 /**
@@ -52,20 +54,6 @@ router.delete(
     param("id").exists().isString().custom(validators.checkObjectId),
   ]),
   commentController.deleteSingleComment
-);
-
-/**
- * @route GET /comments/:id
- * @description Get details of a comment
- * @access Login required
- */
-router.get(
-  "/:id",
-  authentication.loginRequired,
-  validators.validate([
-    param("id").exists().isString().custom(validators.checkObjectId),
-  ]),
-  commentController.getSingleComment
 );
 
 module.exports = router;

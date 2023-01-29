@@ -10,19 +10,19 @@ const userApi = require("./user.api");
 router.use("/users", userApi);
 
 //postApi
-const postApi = require("./post.api");
-router.use("/posts", postApi);
+const subscriptionApi = require("./subscription.api");
+router.use("/subscriptions", subscriptionApi);
 
 //commentApi
 const commentApi = require("./comment.api");
 router.use("/comments", commentApi);
 
-//reactionApi
-const reactionApi = require("./reaction.api");
-router.use("/reactions", reactionApi);
+//storyApi
+const storyApi = require("./story.api");
+router.use("/stories", storyApi);
 
-//friendApi
-const friendApi = require("./friend.api");
-router.use("/friends", friendApi);
+//chapterApi
+const chapterApi = require("./chapter.api");
+router.use("/chapters", chapterApi);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const validators = require("../middlewares/validators");
 /**
  * @route POST /users
  * @description Register new user
- * @body {email, password}
+ * @body {name, email, password}
  * @access Public
  */
 router.post(
@@ -33,12 +33,6 @@ router.post(
 router.get("/", authentication.loginRequired, userController.getUsers);
 
 /**
- * @route GET /users/me
- * @description Get curent user info
- * @access Login required
- */
-router.get("/me", authentication.loginRequired, userController.getCurrentUser);
-/**
  * @route GET /users/:id
  * @description Get a user profile
  * @access Login required
@@ -51,10 +45,18 @@ router.get(
   ]),
   userController.getSingleUser
 );
+
+/**
+ * @route GET /users/me
+ * @description Get curent user info
+ * @access Login required
+ */
+router.get("/me", authentication.loginRequired, userController.getCurrentUser);
+
 /**
  * @route PUT /users/:id
  * @description Update user profile
- * @body {name, avatarUrl, coverUrl, aboutMe, city, country, company, jobTitle, facebookLink, instagramLink, linkedinLink, twitterLink}
+ * @body {Account Name, Cover, Gender, Address, Date of Birth, Phone number, ID}
  * @access Login required
  */
 router.put(

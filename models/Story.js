@@ -10,7 +10,7 @@ const storySchema = Schema(
     summaries: { type: String, require: true },
 
     isDelete: { type: Boolean, default: false, select: false },
-    chaptertCount: { type: Number, default: 0 },
+    chapterCount: { type: Number, default: 0 },
     reactions: {
       like: { type: Number, default: 0 },
       dislike: { type: Number, default: 0 },

@@ -12,10 +12,10 @@ const commentSchema = Schema(
       required: true,
       refPath: "targetType", //reference to Post or Comment depend on value of targetType
     },
-    reaction: {
-      like: { type: Number, default: 0 },
-      dislike: { type: Number, default: 0 },
-    },
+    // reaction: {
+    //   like: { type: Number, default: 0 },
+    //   dislike: { type: Number, default: 0 },
+    // },
 
     isDelete: { type: Boolean, default: false, select: false },
   },

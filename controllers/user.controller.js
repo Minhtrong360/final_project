@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const Friend = require("../models/Friend");
+// const Friend = require("../models/Friend");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const bcrypt = require("bcryptjs");
 
@@ -57,27 +57,15 @@ userController.getUsers = catchAsync(async (req, res, next) => {
     .skip(offset)
     .limit(limit);
 
-  const promises = users.map(async (user) => {
-    let temp = user.toJSON();
-    temp.friendship = await Friend.findOne({
-      $or: [
-        { from: currentUserId, to: user._id },
-        { from: user._id, to: currentUserId },
-      ],
-    });
-    return temp;
-  });
-
-  const userWithFriendship = await Promise.all(promises);
   // Response
 
   sendResponse(
     res,
     200,
     true,
-    { users: userWithFriendship, totalPages, count },
+    { users, totalPages, count },
     null,
-    "Get Current User Successfully"
+    "Get Users Successfully"
   );
 });
 
@@ -102,15 +90,9 @@ userController.getSingleUser = catchAsync(async (req, res, next) => {
   // Validation
   let user = await User.findById({ userId });
   if (!user)
-    throw new AppError(400, "User's not found", "Get Current User Error");
+    throw new AppError(400, "User's not found", "Get Single User Error");
   // Process
-  user = user.toJSON();
-  user.friendship = await Friend.findOne({
-    $or: [
-      { from: currentUserId, to: user._id },
-      { from: user._id, to: currentUserId },
-    ],
-  });
+
   // Response
 
   sendResponse(res, 200, true, { user }, null, "Get Single User Successfully");
@@ -131,17 +113,12 @@ userController.updateProfile = catchAsync(async (req, res, next) => {
   // Process
   const allows = [
     "name",
-    "avatarUrl",
     "coverUrl",
-    "aboutMe",
-    "city",
-    "country",
-    "company",
-    "jobTitle",
-    "facebookLink",
-    "instagramLink",
-    "linkedinLink",
-    "twitterLink",
+    "gender",
+    "address",
+    "birthday",
+    "phoneNumber",
+    "ID",
   ];
 
   allows.forEach((field) => {

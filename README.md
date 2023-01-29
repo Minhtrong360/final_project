@@ -125,7 +125,7 @@ Users will be able to enjoy an interactive story reading experience.
 - @access Public access
   \*/
 
-/\*\* Comments outside the story
+/\*\* Get comments outside the story
 
 - @route GET /stories/:id/comments
 - @description Get comments of a story
@@ -137,7 +137,7 @@ Users will be able to enjoy an interactive story reading experience.
 
 - @route POST /stories
 - @description Create a new story
-- @body {titles, cover, authors, genres, summaries, createdAt}
+- @body {titles, cover, authors, genres, summaries}
 - @access Login reuqired
   \*/
 
@@ -145,7 +145,7 @@ Users will be able to enjoy an interactive story reading experience.
 
 - @route PUT /stories/:id
 - @description Update a story
-- @body {titles, cover, authors, genres, summaries, createdAt}
+- @body {titles, cover, authors, genres, summaries}
 - @access Login required
   \*/
 
@@ -244,7 +244,7 @@ Users will be able to enjoy an interactive story reading experience.
 
 /\*\* Register subscription to be writter
 
-- @route POST /users/:id/subscription
+- @route POST subscriptions/user/:id
 - @description Register new subscription
 - @body {duration : [30days, 90days, 180days, 365days]}
 - @access Login required
@@ -252,7 +252,7 @@ Users will be able to enjoy an interactive story reading experience.
 
 /\*\* GET subscription of a user
 
-- @route GET /users/:id/subscription
+- @route GET subscriptions/user/:id
 - @description Get subscription of a user
 - @body
 - @access Login required
@@ -260,7 +260,7 @@ Users will be able to enjoy an interactive story reading experience.
 
 /\*\* Update subscription of a user
 
-- @route PUT /users/:id/subscription
+- @route PUT subscriptions/user/:id
 - @description Update subscription of a user
 - @body {duration : + [30days, 90days, 180days, 365days]}
 - @access Login required
@@ -268,7 +268,7 @@ Users will be able to enjoy an interactive story reading experience.
 
 /\*\* Not extend subscription of a user
 
-- @route DELETE /users/:id/subscription
+- @route DELETE subscriptions/user/:id
 - @description Delete subscription of a user
 - @body
 - @access Login required
