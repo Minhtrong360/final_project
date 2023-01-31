@@ -73,7 +73,7 @@ userController.getCurrentUser = catchAsync(async (req, res, next) => {
   // Get data from request
   let getCurrentUserId = req.userId;
   // Validation
-  let user = await User.findById({ getCurrentUserId });
+  let user = await User.findById(getCurrentUserId);
   if (!user)
     throw new AppError(400, "User's not found", "Get Current User Error");
   // Process
@@ -88,7 +88,7 @@ userController.getSingleUser = catchAsync(async (req, res, next) => {
   let currentUserId = req.userId;
   const userId = req.params.id;
   // Validation
-  let user = await User.findById({ userId });
+  let user = await User.findById(userId);
   if (!user)
     throw new AppError(400, "User's not found", "Get Single User Error");
   // Process

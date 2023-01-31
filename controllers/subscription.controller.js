@@ -1,8 +1,7 @@
-const Post = require("../models/Post");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const User = require("../models/User");
 const Comment = require("../models/Comment");
-const Friend = require("../models/Friend");
+
 const Subscription = require("../models/Subscription");
 
 const subscriptionController = {};

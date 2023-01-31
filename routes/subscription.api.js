@@ -68,7 +68,7 @@ router.delete(
   validators.validate([
     param("id").exists().isString().custom(validators.checkObjectId),
   ]),
-  subscriptionsController.deleteSubscription
+  subscriptionController.deleteSubscription
 );
 
 module.exports = router;

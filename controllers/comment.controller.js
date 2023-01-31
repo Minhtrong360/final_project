@@ -1,5 +1,5 @@
 const Comment = require("../models/Comment");
-const Post = require("../models/Post");
+
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 
 const commentController = {};
