@@ -3,6 +3,7 @@ const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Story = require("../models/Story");
+const Comment = require("../models/Comment");
 
 const chapterController = {};
 
@@ -16,11 +17,12 @@ const calculatChapterCount = async (storyId) => {
 
 chapterController.getChaptersOfStory = catchAsync(async (req, res, next) => {
   // Get data from request
+  let storyId = req.params.storyId;
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 1;
+  limit = parseInt(limit) || 10;
   // Validation
-  const filterConditions = [{ isdelete: false }];
+  const filterConditions = [{ isDelete: false }, { ofStory: storyId }];
 
   const filterCriteria = filterConditions.length
     ? { $and: filterConditions }
@@ -28,7 +30,7 @@ chapterController.getChaptersOfStory = catchAsync(async (req, res, next) => {
 
   // Process
 
-  const count = Chapter.countDocuments(filterCriteria);
+  const count = await Chapter.countDocuments(filterCriteria);
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
@@ -55,7 +57,8 @@ chapterController.getSingleChapterOfStory = catchAsync(
 
     const chapterId = req.params.chapterId;
     // Validation
-    let chapter = await Chapter.findById({ chapterId });
+    let chapter = await Chapter.findById(chapterId);
+    chapter = await chapter.populate("ofStory");
     if (!chapter)
       throw new AppError(
         400,
@@ -88,15 +91,18 @@ chapterController.getCommentOfChapterOfStory = catchAsync(
     if (!chapter)
       throw new AppError(400, "Chapter does not exist", "Get chapter error");
     //Get comments
-    const count = await Comment.countDocuments({ chapter: chapterId }); // Find all Comment of a chapter with chapterId
+    const count = await Comment.countDocuments(
+      { targetType: "Chapter" },
+      { targetId: chapterId }
+    ); // Find all Comment of a chapter with chapterId
     const totalPages = Math.ceil(count / limit);
     const offset = limit * (page - 1);
 
-    const comments = await Comment.find({ chapter: chapterId })
+    const comments = await Comment.find({ targetId: chapterId })
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit)
-      .populate("story");
+      .populate("targetId");
     // Response
 
     sendResponse(
@@ -113,24 +119,34 @@ chapterController.getCommentOfChapterOfStory = catchAsync(
 chapterController.createNewChpaterOfStory = catchAsync(
   async (req, res, next) => {
     // Get data from request
+
     let currentUserId = req.userId;
     let storyId = req.params.storyId;
     let { number, name, content } = req.body;
     // Validation
 
-    const user = await User.findById({ currentUserId });
-    const expired = user.subscription.expired;
-    const today = new Date();
+    // const user = await User.findById(currentUserId);
+    // const expired = user.subscription.expired;
+    // const today = new Date();
 
-    if (!user.subscription.expired || expired < today)
-      throw new AppError(
-        400,
-        "Permission Required or Subscription is expired",
-        "Create Story Error"
-      );
+    // if (!user.subscription.expired || expired < today)
+    //   throw new AppError(
+    //     400,
+    //     "Permission Required or Subscription is expired",
+    //     "Create Story Error"
+    //   );
     // Process
 
-    let chapter = await Chapter.create({
+    let chapter = await Chapter.findOne({ number });
+
+    if (chapter)
+      throw new AppError(
+        400,
+        "Chapter already existed",
+        "Create Chapter Error"
+      );
+
+    chapter = await Chapter.create({
       number,
       name,
       content,
@@ -139,7 +155,7 @@ chapterController.createNewChpaterOfStory = catchAsync(
 
     await calculatChapterCount(storyId);
 
-    chapter = await Chapter.populate("ofStory");
+    // chapter = await Chapter.populate("ofStory"); hỏi
 
     // Response
 
@@ -153,20 +169,21 @@ chapterController.updateChpaterOfStory = catchAsync(async (req, res, next) => {
   const chapterId = req.params.chapterId;
   // Validation
 
-  const user = await User.findById({ currentUserId });
-  const expired = user.subscription.expired;
-  const today = new Date();
-  if (!user.subscription.expired || expired < today)
-    throw new AppError(
-      400,
-      "Permission Required or Subscription is expired",
-      "Create Story Error"
-    );
+  // const user = await User.findById({ currentUserId });
+  // const expired = user.subscription.expired;
+  // const today = new Date();
+  // if (!user.subscription.expired || expired < today)
+  //   throw new AppError(
+  //     400,
+  //     "Permission Required or Subscription is expired",
+  //     "Update Chapter Error"
+  //   );
 
-  let chapter = await Chapter.findById({ chapterId });
+  let chapter = await Chapter.findById(chapterId).populate("ofStory");
   if (!chapter)
     throw new AppError(400, "Chapter's not found", "Update Chapter Error");
-  if (!chapter.author.equal(currentUserId))
+
+  if (!chapter.ofStory.author.equals(currentUserId))
     throw new AppError(
       400,
       "Only author can edit chapter",
@@ -191,21 +208,19 @@ chapterController.updateChpaterOfStory = catchAsync(async (req, res, next) => {
 chapterController.deleteChapterOfStory = catchAsync(async (req, res, next) => {
   // Get data from request
   let currentUserId = req.userId;
-  const chapterId = req.params.id;
+  const chapterId = req.params.chapterId;
   // Validation
 
   // Process
-  const chapter = await Chapter.findByIdAndUpdate(
-    { _id: chapterId, author: currentUserId },
-    { isDelete: true },
-    { new: true }
-  );
-  if (!chapter)
+  const chapter = await Chapter.findById(chapterId).populate("ofStory");
+  if (!chapter || !chapter.ofStory.author.equals(currentUserId))
     throw new AppError(
       400,
       "Chapter is not found or User not authorized",
       "Delete Single Chapter Error"
     );
+  chapter.isDelete = true;
+  await chapter.save();
   let storyId = chapter.ofStory;
   await calculatChapterCount(storyId);
   // Response

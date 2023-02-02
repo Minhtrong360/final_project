@@ -9,21 +9,45 @@ const subscriptionController = {};
 subscriptionController.registerNewSubscription = catchAsync(
   async (req, res, next) => {
     // Get data from request
-    let userId = req.params.id;
+    let userId = req.params.userId;
     let { duration, paymentMethods } = req.body;
     // Validation
 
     // Process
-    let timeRegister = new Date();
-    let nextMonth = today.setDate(today.getDate() + Number(duration));
-    let expired = new Date(nextMonth);
+    let today = new Date();
+    let timeRegister =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
 
-    let subscription = await Subscription.create({
+    today.setDate(today.getDate() + Number(duration));
+
+    let expired =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
+
+    let subscription = await Subscription.find({ author: userId });
+
+    if (subscription)
+      throw new AppError(
+        400,
+        "Subscription's existed",
+        "Register Subscription Error"
+      );
+
+    subscription = await Subscription.create({
       author: userId,
-      timeRegister: timeRegister,
+      timeRegister,
       expired: expired,
       paymentMethods,
     });
+
+    // Hỏi xem sao mất 1 ngày
 
     // Response
 
@@ -42,7 +66,7 @@ subscriptionController.getSubscription = catchAsync(async (req, res, next) => {
   // Get data from request
   const subscriptionId = req.params.id;
   // Validation
-  let subscription = await Subscription.findById({ subscriptionId }).populate(
+  let subscription = await Subscription.findById(subscriptionId).populate(
     "author"
   );
   if (!subscription)
@@ -59,7 +83,7 @@ subscriptionController.getSubscription = catchAsync(async (req, res, next) => {
     res,
     200,
     true,
-    { subscription },
+    subscription,
     null,
     "Get Subscription Successfully"
   );
@@ -70,17 +94,17 @@ subscriptionController.updateSubscription = catchAsync(
     // Get data from request
     let currentUserId = req.userId;
     const subscriptionId = req.params.id;
-    const duration = req.body;
+    const { duration } = req.body;
     // Validation
 
-    let subscription = await Subscription.findById({ subscriptionId });
+    let subscription = await Subscription.findById(subscriptionId);
     if (!subscription)
       throw new AppError(
         400,
         "Subscription's not found",
         "Update Subscription Error"
       );
-    if (!subscription.author.equal(currentUserId))
+    if (!subscription.author.equals(currentUserId))
       throw new AppError(
         400,
         "Only author can update subscription",
@@ -89,11 +113,13 @@ subscriptionController.updateSubscription = catchAsync(
 
     // Process
 
-    subscription.expired = new Date(
-      subscription.expired.setDate(
-        subscription.expired.getDate() + Number(duration)
-      )
-    );
+    let date = subscription.expired;
+    date.setDate(date.getDate() + Number(duration));
+
+    expired =
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+    subscription.expired = expired;
 
     await subscription.save();
     // Response

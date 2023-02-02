@@ -15,10 +15,10 @@ const userSchema = Schema(
       require: false,
       enum: ["Male", "Female", "Undefined"],
     },
-    address: { type: String, require: false },
-    birthday: { type: Date, require: false },
-    phoneNumber: { type: Number, require: false },
-    ID: { type: Number, require: false },
+    address: { type: String, require: false, default: "" },
+    birthday: { type: Date, require: false, default: "" },
+    phoneNumber: { type: Number, require: false, default: "" },
+    ID: { type: Number, require: false, default: "" },
 
     isDelete: { type: Boolean, default: false, select: false },
 

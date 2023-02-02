@@ -13,7 +13,7 @@ const validators = require("../middlewares/validators");
 * @access Public access
   */
 router.get(
-  "/:storyId",
+  "/story/:storyId",
   validators.validate([
     param("storyId").exists().isString().custom(validators.checkObjectId),
   ]),
@@ -30,7 +30,6 @@ router.get(
 router.get(
   "/:chapterId",
   validators.validate([
-    param("storyId").exists().isString().custom(validators.checkObjectId),
     param("chapterId").exists().isString().custom(validators.checkObjectId),
   ]),
   chapterController.getSingleChapterOfStory
