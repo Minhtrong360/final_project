@@ -7,6 +7,7 @@ const chapterSchema = Schema(
     name: { type: String, require: true },
     content: { type: String, require: true },
     ofStory: { type: Schema.Types.ObjectId, require: true, ref: "Story" },
+    isDelete: { type: Boolean, default: false, select: false },
   },
   { timestamps: true }
 );

@@ -34,9 +34,9 @@ userController.getUsers = catchAsync(async (req, res, next) => {
   let currentUserId = req.userId;
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 1;
+  limit = parseInt(limit) || 10;
   // Validation
-  const filterConditions = [{ isdelete: false }];
+  const filterConditions = [{ isDelete: false }];
   if (filter.name) {
     filterConditions.push({
       name: { $regex: filter.name, $options: "i" },
@@ -48,7 +48,8 @@ userController.getUsers = catchAsync(async (req, res, next) => {
 
   // Process
 
-  const count = User.countDocuments(filterCriteria);
+  const count = await User.countDocuments(filterCriteria);
+  console.log("fourth", count);
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
@@ -71,16 +72,15 @@ userController.getUsers = catchAsync(async (req, res, next) => {
 
 userController.getCurrentUser = catchAsync(async (req, res, next) => {
   // Get data from request
-  let getCurrentUserId = req.userId;
+  let currentUserId = req.userId;
   // Validation
-  let user = await User.findById(getCurrentUserId);
+  let user = await User.findById(currentUserId);
   if (!user)
     throw new AppError(400, "User's not found", "Get Current User Error");
   // Process
 
   // Response
-
-  sendResponse(res, 200, true, { user }, null, "Get Current User Successfully");
+  sendResponse(res, 200, true, user, null, "Get Current User Successfully");
 });
 
 userController.getSingleUser = catchAsync(async (req, res, next) => {
@@ -107,7 +107,7 @@ userController.updateProfile = catchAsync(async (req, res, next) => {
   if (currentUserId !== userId)
     throw new AppError(400, "Permission Requird", "Update User Error");
 
-  let user = await User.findById({ userId });
+  let user = await User.findById(userId);
   if (!user) throw new AppError(400, "User's not found", "Update User Error");
 
   // Process

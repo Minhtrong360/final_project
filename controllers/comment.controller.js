@@ -1,6 +1,7 @@
 const Comment = require("../models/Comment");
 
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
+const mongoose = require("mongoose");
 
 const commentController = {};
 
@@ -12,7 +13,7 @@ const calculateCommentCount = async (targetType, targetId) => {
   });
   await mongoose
     .model(targetType)
-    .findByIdAndUpdate(targetId, { recommentCountactions });
+    .findByIdAndUpdate(targetId, { commentCount });
 };
 
 commentController.saveComment = catchAsync(async (req, res, next) => {
@@ -20,7 +21,7 @@ commentController.saveComment = catchAsync(async (req, res, next) => {
   const { targetType, targetId, content } = req.body;
 
   // Check targetType exists
-  const targetObj = await mongoose.model(targetType).find(targetId);
+  const targetObj = await mongoose.model(targetType).find({ targetId });
   if (!targetObj)
     throw new AppError(400, `${targetType} not found`, "Create Comment Error");
 
@@ -30,6 +31,7 @@ commentController.saveComment = catchAsync(async (req, res, next) => {
     author: currentUserId,
     content,
   });
+  await comment.populate("targetId");
 
   return sendResponse(res, 200, true, comment, null, "Save Comment Success");
 });

@@ -1,6 +1,7 @@
 const Story = require("../models/Story");
 const User = require("../models/User");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
+const Comment = require("../models/Comment");
 
 const storyController = {};
 
@@ -19,7 +20,7 @@ storyController.getStories = catchAsync(async (req, res, next) => {
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 1;
   // Validation
-  const filterConditions = [{ isdelete: false }];
+  const filterConditions = [{ isDelete: false }];
   if (filter.name) {
     filterConditions.push({
       name: { $regex: filter.name, $options: "i" },
@@ -31,7 +32,7 @@ storyController.getStories = catchAsync(async (req, res, next) => {
 
   // Process
 
-  const count = Story.countDocuments(filterCriteria);
+  const count = await Story.countDocuments(filterCriteria);
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
@@ -57,21 +58,14 @@ storyController.getSingleStory = catchAsync(async (req, res, next) => {
 
   const storyId = req.params.id;
   // Validation
-  let story = await User.findById({ storyId });
+  let story = await Story.findById(storyId);
   if (!story)
     throw new AppError(400, "Story's not found", "Get Single Story Error");
   // Process
 
   // Response
 
-  sendResponse(
-    res,
-    200,
-    true,
-    { story },
-    null,
-    "Get Single Story Successfully"
-  );
+  sendResponse(res, 200, true, story, null, "Get Single Story Successfully");
 });
 
 storyController.getCommentOfStory = catchAsync(async (req, res, next) => {
@@ -92,7 +86,7 @@ storyController.getCommentOfStory = catchAsync(async (req, res, next) => {
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
-  const comments = await Comment.find({ story: storyId })
+  const comments = await Comment.find({ targetId: storyId })
     .sort({ createdAt: -1 })
     .skip(offset)
     .limit(limit)
@@ -115,16 +109,16 @@ storyController.createNewStory = catchAsync(async (req, res, next) => {
   let { title, cover, genre, summarize } = req.body;
   // Validation
 
-  const user = await User.findById({ currentUserId });
-  const expired = user.subscription.expired;
-  const today = new Date();
+  // const user = await User.findById(currentUserId);
+  // const expired = user?.subscription?.expired;
+  // const today = new Date();
 
-  if (!user.subscription.expired || expired < today)
-    throw new AppError(
-      400,
-      "Permission Required or Subscription is expired",
-      "Create Story Error"
-    );
+  // if (!user.subscription.expired || expired < today)
+  //   throw new AppError(
+  //     400,
+  //     "Permission Required or Subscription is expired",
+  //     "Create Story Error"
+  //   );
   // Process
 
   let story = await Story.create({
@@ -150,20 +144,20 @@ storyController.updateSingleStory = catchAsync(async (req, res, next) => {
   const storyId = req.params.id;
   // Validation
 
-  const user = await User.findById({ currentUserId });
-  const expired = user.subscription.expired;
-  const today = new Date();
-  if (!user.subscription.expired || expired < today)
-    throw new AppError(
-      400,
-      "Permission Required or Subscription is expired",
-      "Create Story Error"
-    );
+  // const user = await User.findById(currentUserId);
+  // const expired = user.subscription.expired;
+  // const today = new Date();
+  // if (!user.subscription.expired || expired < today)
+  //   throw new AppError(
+  //     400,
+  //     "Permission Required or Subscription is expired",
+  //     "Create Story Error"
+  //   );
 
-  let story = await Story.findById({ storyId });
+  let story = await Story.findById(storyId);
   if (!story)
     throw new AppError(400, "Story's not found", "Update Story Error");
-  if (!story.author.equal(currentUserId))
+  if (!story.author.equals(currentUserId))
     throw new AppError(400, "Only author can edit story", "Update Story Error");
 
   // Process
