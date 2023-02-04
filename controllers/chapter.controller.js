@@ -116,7 +116,7 @@ chapterController.getCommentOfChapterOfStory = catchAsync(
   }
 );
 
-chapterController.createNewChpaterOfStory = catchAsync(
+chapterController.createNewChapterOfStory = catchAsync(
   async (req, res, next) => {
     // Get data from request
 
@@ -125,21 +125,28 @@ chapterController.createNewChpaterOfStory = catchAsync(
     let { number, name, content } = req.body;
     // Validation
 
-    // const user = await User.findById(currentUserId);
-    // const expired = user.subscription.expired;
-    // const today = new Date();
+    const user = await User.findById(currentUserId);
 
-    // if (!user.subscription.expired || expired < today)
-    //   throw new AppError(
-    //     400,
-    //     "Permission Required or Subscription is expired",
-    //     "Create Story Error"
-    //   );
+    if (!user.isSubscription)
+      throw new AppError(
+        400,
+        "Permission Required or Subscription is expired",
+        "Create Chapter Error"
+      );
     // Process
 
+    let story = await Story.findById(storyId);
+    if (!story)
+      throw new AppError(400, "Story does not exist", "Create Chapter Error");
+    if (!story.author.equals(currentUserId))
+      throw new AppError(
+        400,
+        "Only author of Story can create Chapter of this Story",
+        "Create Chapter Error"
+      );
     let chapter = await Chapter.findOne({ number });
 
-    if (chapter)
+    if (!chapter)
       throw new AppError(
         400,
         "Chapter already existed",
@@ -155,7 +162,7 @@ chapterController.createNewChpaterOfStory = catchAsync(
 
     await calculatChapterCount(storyId);
 
-    // chapter = await Chapter.populate("ofStory"); hỏi
+    chapter = await chapter.populate("ofStory");
 
     // Response
 
@@ -167,17 +174,17 @@ chapterController.updateChpaterOfStory = catchAsync(async (req, res, next) => {
   // Get data from request
   let currentUserId = req.userId;
   const chapterId = req.params.chapterId;
+  let { number, name, content } = req.body;
   // Validation
 
-  // const user = await User.findById({ currentUserId });
-  // const expired = user.subscription.expired;
-  // const today = new Date();
-  // if (!user.subscription.expired || expired < today)
-  //   throw new AppError(
-  //     400,
-  //     "Permission Required or Subscription is expired",
-  //     "Update Chapter Error"
-  //   );
+  const user = await User.findById(currentUserId);
+
+  if (!user.isSubscription)
+    throw new AppError(
+      400,
+      "Permission Required or Subscription is expired",
+      "Update Chapter Error"
+    );
 
   let chapter = await Chapter.findById(chapterId).populate("ofStory");
   if (!chapter)
@@ -187,6 +194,17 @@ chapterController.updateChpaterOfStory = catchAsync(async (req, res, next) => {
     throw new AppError(
       400,
       "Only author can edit chapter",
+      "Update Chapter Error"
+    );
+
+  let compare = await Chapter.findOne({
+    number,
+  });
+
+  if (compare)
+    throw new AppError(
+      400,
+      "Number of Chapter already existed",
       "Update Chapter Error"
     );
 

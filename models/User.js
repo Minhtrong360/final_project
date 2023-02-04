@@ -21,9 +21,8 @@ const userSchema = Schema(
     ID: { type: Number, require: false, default: "" },
 
     isDelete: { type: Boolean, default: false, select: false },
-
     subscription: { type: Schema.Types.ObjectId, ref: "Subscription" },
-
+    isSubscription: { type: Boolean, default: false },
     storyCount: { type: Number, default: 0 },
     stories: { type: Schema.Types.ObjectId, require: true, ref: "Story" },
   },
@@ -39,7 +38,7 @@ userSchema.methods.toJSON = function () {
 
 userSchema.methods.generateToken = async function () {
   const accessToken = await jwt.sign({ _id: this._id }, JWT_SECRET_KEY, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
   return accessToken;
 };

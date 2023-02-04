@@ -67,7 +67,7 @@ router.post(
     body("name", "Missing chapter's name").exists().notEmpty(),
     body("content", "Missing chapter's content").exists().notEmpty(),
   ]),
-  chapterController.createNewChpaterOfStory
+  chapterController.createNewChapterOfStory
 );
 
 /** (For writter)

@@ -10,35 +10,26 @@ subscriptionController.registerNewSubscription = catchAsync(
   async (req, res, next) => {
     // Get data from request
     let userId = req.params.userId;
-    let { duration, paymentMethods } = req.body;
+    let { duration, paymentMethods, time } = req.body;
     // Validation
 
     // Process
-    let today = new Date();
-    let timeRegister =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate();
 
+    let timeRegister = time;
+
+    let today = new Date(time);
     today.setDate(today.getDate() + Number(duration));
 
-    let expired =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate();
+    let expired = today.valueOf();
 
     let subscription = await Subscription.find({ author: userId });
 
-    if (subscription)
-      throw new AppError(
-        400,
-        "Subscription's existed",
-        "Register Subscription Error"
-      );
+    // if (subscription)
+    //   throw new AppError(
+    //     400,
+    //     "Subscription's existed",
+    //     "Register Subscription Error"
+    //   );
 
     subscription = await Subscription.create({
       author: userId,

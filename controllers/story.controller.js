@@ -18,7 +18,7 @@ storyController.getStories = catchAsync(async (req, res, next) => {
 
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 1;
+  limit = parseInt(limit) || 10;
   // Validation
   const filterConditions = [{ isDelete: false }];
   if (filter.name) {
@@ -82,7 +82,10 @@ storyController.getCommentOfStory = catchAsync(async (req, res, next) => {
       "Get Story's comment error"
     );
   //Get comments
-  const count = await Comment.countDocuments({ story: storyId });
+  const count = await Comment.countDocuments(
+    { targetType: "Story" },
+    { targetId: storyId }
+  );
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
@@ -106,22 +109,24 @@ storyController.getCommentOfStory = catchAsync(async (req, res, next) => {
 storyController.createNewStory = catchAsync(async (req, res, next) => {
   // Get data from request
   let currentUserId = req.userId;
+
   let { title, cover, genre, summarize } = req.body;
   // Validation
 
-  // const user = await User.findById(currentUserId);
-  // const expired = user?.subscription?.expired;
-  // const today = new Date();
+  const user = await User.findById(currentUserId);
 
-  // if (!user.subscription.expired || expired < today)
-  //   throw new AppError(
-  //     400,
-  //     "Permission Required or Subscription is expired",
-  //     "Create Story Error"
-  //   );
+  if (!user.isSubscription)
+    throw new AppError(
+      400,
+      "Permission Required or Subscription is expired",
+      "Create Story Error"
+    );
   // Process
 
-  let story = await Story.create({
+  let story = await Story.findOne({ title: { $regex: title, $options: "i" } });
+  if (story)
+    throw new AppError(400, "Story already existed", "Create Story Error");
+  story = await Story.create({
     title,
     cover,
     genre,
@@ -142,17 +147,17 @@ storyController.updateSingleStory = catchAsync(async (req, res, next) => {
   // Get data from request
   let currentUserId = req.userId;
   const storyId = req.params.id;
+  const { title, cover, genre, summarize } = req.body;
   // Validation
 
-  // const user = await User.findById(currentUserId);
-  // const expired = user.subscription.expired;
-  // const today = new Date();
-  // if (!user.subscription.expired || expired < today)
-  //   throw new AppError(
-  //     400,
-  //     "Permission Required or Subscription is expired",
-  //     "Create Story Error"
-  //   );
+  const user = await User.findById(currentUserId);
+
+  if (!user.isSubscription)
+    throw new AppError(
+      400,
+      "Permission Required or Subscription is expired",
+      "Update Story Error"
+    );
 
   let story = await Story.findById(storyId);
   if (!story)
@@ -160,10 +165,16 @@ storyController.updateSingleStory = catchAsync(async (req, res, next) => {
   if (!story.author.equals(currentUserId))
     throw new AppError(400, "Only author can edit story", "Update Story Error");
 
+  let compare = await Story.findOne({
+    title: { $regex: title, $options: "i" },
+  });
+
+  if (compare)
+    throw new AppError(400, "Story already existed", "Update Story Error");
   // Process
   const allows = ["title", "cover", "genre", "summarize"];
 
-  allows.forEach((field) => {
+  allows.forEach(async (field) => {
     if (req.body[field] !== undefined) {
       story[field] = req.body[field];
     }
