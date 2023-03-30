@@ -91,10 +91,7 @@ chapterController.getCommentOfChapterOfStory = catchAsync(
     if (!chapter)
       throw new AppError(400, "Chapter does not exist", "Get chapter error");
     //Get comments
-    const count = await Comment.countDocuments(
-      { targetType: "Chapter" },
-      { targetId: chapterId }
-    ); // Find all Comment of a chapter with chapterId
+    const count = (await Comment.find({ targetId: chapterId })).length; // Find all Comment of a chapter with chapterId
     const totalPages = Math.ceil(count / limit);
     const offset = limit * (page - 1);
 
@@ -122,12 +119,14 @@ chapterController.createNewChapterOfStory = catchAsync(
 
     let currentUserId = req.userId;
     let storyId = req.params.storyId;
-    let { number, name, content } = req.body;
+    let { title, avatar, content } = req.body;
     // Validation
+
+    console.log("content BE", content);
 
     const user = await User.findById(currentUserId);
 
-    if (!user.isSubscription)
+    if (!user?.subscription?.isSubscription)
       throw new AppError(
         400,
         "Permission Required or Subscription is expired",
@@ -138,15 +137,16 @@ chapterController.createNewChapterOfStory = catchAsync(
     let story = await Story.findById(storyId);
     if (!story)
       throw new AppError(400, "Story does not exist", "Create Chapter Error");
-    if (!story.author.equals(currentUserId))
+
+    if (!story.authorId.equals(currentUserId))
       throw new AppError(
         400,
         "Only author of Story can create Chapter of this Story",
         "Create Chapter Error"
       );
-    let chapter = await Chapter.findOne({ number });
+    let chapter = await Chapter.findOne({ title, ofStory: storyId });
 
-    if (!chapter)
+    if (chapter)
       throw new AppError(
         400,
         "Chapter already existed",
@@ -154,14 +154,16 @@ chapterController.createNewChapterOfStory = catchAsync(
       );
 
     chapter = await Chapter.create({
-      number,
-      name,
+      title,
+      avatar,
       content,
       ofStory: storyId,
+      number: story.chapterCount++,
     });
 
     await calculatChapterCount(storyId);
 
+    console.log("createNewChapterOfStory", chapter);
     chapter = await chapter.populate("ofStory");
 
     // Response
@@ -170,16 +172,17 @@ chapterController.createNewChapterOfStory = catchAsync(
   }
 );
 
-chapterController.updateChpaterOfStory = catchAsync(async (req, res, next) => {
+chapterController.updateChapterOfStory = catchAsync(async (req, res, next) => {
   // Get data from request
   let currentUserId = req.userId;
   const chapterId = req.params.chapterId;
-  let { number, name, content } = req.body;
+  let { updateData } = req.body;
   // Validation
+  console.log("data truyền vào để update:", updateData);
 
   const user = await User.findById(currentUserId);
 
-  if (!user.isSubscription)
+  if (!user.subscription.isSubscription)
     throw new AppError(
       400,
       "Permission Required or Subscription is expired",
@@ -190,30 +193,30 @@ chapterController.updateChpaterOfStory = catchAsync(async (req, res, next) => {
   if (!chapter)
     throw new AppError(400, "Chapter's not found", "Update Chapter Error");
 
-  if (!chapter.ofStory.author.equals(currentUserId))
+  if (!chapter.ofStory.authorId.equals(currentUserId))
     throw new AppError(
       400,
       "Only author can edit chapter",
       "Update Chapter Error"
     );
 
-  let compare = await Chapter.findOne({
-    number,
-  });
-
-  if (compare)
-    throw new AppError(
-      400,
-      "Number of Chapter already existed",
-      "Update Chapter Error"
-    );
+  // let compare = await Chapter.findOne({
+  //   title: updateData?.title,
+  // });
+  // console.log("compare", compare?.ofStory.equals(chapter?.ofStory?._id));
+  // if (compare && compare?.ofStory.equals(chapter?.ofStory?._id))
+  //   throw new AppError(
+  //     400,
+  //     "Chapter's title already existed",
+  //     "Update Chapter Error"
+  //   );
 
   // Process
-  const allows = ["number", "name", "content"];
+  const allows = ["title", "avatar", "content"];
 
-  allows.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      chapter[field] = req.body[field];
+  allows.forEach(async (field) => {
+    if (updateData[field] !== undefined) {
+      chapter[field] = updateData[field];
     }
   });
 
@@ -231,7 +234,7 @@ chapterController.deleteChapterOfStory = catchAsync(async (req, res, next) => {
 
   // Process
   const chapter = await Chapter.findById(chapterId).populate("ofStory");
-  if (!chapter || !chapter.ofStory.author.equals(currentUserId))
+  if (!chapter || !chapter.ofStory.authorId.equals(currentUserId))
     throw new AppError(
       400,
       "Chapter is not found or User not authorized",

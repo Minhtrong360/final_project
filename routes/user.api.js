@@ -67,4 +67,12 @@ router.put(
   ]),
   userController.updateProfile
 );
+router.put(
+  "/:id/lovedStory",
+  authentication.loginRequired,
+  validators.validate([
+    param("id").exists().isString().custom(validators.checkObjectId),
+  ]),
+  userController.updateLovedStory
+);
 module.exports = router;

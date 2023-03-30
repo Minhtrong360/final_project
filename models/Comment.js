@@ -8,14 +8,16 @@ const commentSchema = Schema(
     author: { type: Schema.Types.ObjectId, require: true, ref: "User" },
     targetType: { type: String, required: true, enum: ["Chapter", "Story"] },
     targetId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
       refPath: "targetType", //reference to Post or Comment depend on value of targetType
     },
-    // reaction: {
-    //   like: { type: Number, default: 0 },
-    //   dislike: { type: Number, default: 0 },
-    // },
+    reactions: {
+      like: { type: Number, default: 0 },
+      disLike: { type: Number, default: 0 },
+      authorIdOfLike: [{ type: Object }],
+      authorIdOfDisLike: [{ type: Object }],
+    },
 
     isDelete: { type: Boolean, default: false, select: false },
   },

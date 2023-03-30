@@ -2,19 +2,9 @@ const Comment = require("../models/Comment");
 
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const mongoose = require("mongoose");
+const Story = require("../models/Story");
 
 const commentController = {};
-
-const calculateCommentCount = async (targetType, targetId) => {
-  const commentCount = await Comment.countDocuments({
-    targetType,
-    targetId,
-    isDelete: false,
-  });
-  await mongoose
-    .model(targetType)
-    .findByIdAndUpdate(targetId, { commentCount });
-};
 
 commentController.saveComment = catchAsync(async (req, res, next) => {
   const currentUserId = req.userId;
@@ -22,9 +12,11 @@ commentController.saveComment = catchAsync(async (req, res, next) => {
 
   // Check targetType exists
   const targetObj = await mongoose.model(targetType).find({ targetId });
+  console.log("targetType trong comment controllers", targetType);
+  console.log("targetId trong comment controllers", targetId);
+  console.log("content trong comment controllers", content);
   if (!targetObj)
     throw new AppError(400, `${targetType} not found`, "Create Comment Error");
-
   let comment = await Comment.create({
     targetType,
     targetId,
@@ -79,10 +71,95 @@ commentController.deleteSingleComment = catchAsync(async (req, res, next) => {
     );
 
   // Process
-  await calculateCommentCount(comment.targetType, comment.targetId);
 
   // Response
   sendResponse(res, 200, true, comment, null, "Delete Comment Successfully");
+});
+
+commentController.updateReactionComment = catchAsync(async (req, res, next) => {
+  // Get data from request
+  let currentUserId = req.userId;
+  const commentId = req.params.id;
+  const { data } = req.body;
+  // Validation
+  console.log("data in updateReactionStory", data);
+  // Process
+  const comment = await Comment.findById(commentId);
+  console.log("story in updateReactionStory", comment);
+  if (!comment)
+    throw new AppError(
+      400,
+      "Comment is not found",
+      "Update Reaction Of Comment Error"
+    );
+
+  if (data === "like") {
+    const schemaAuthorIds = comment.reactions.authorIdOfLike;
+
+    const isAuthorIdMatched = schemaAuthorIds.some((schemaAuthorId) => {
+      return mongoose.Types.ObjectId(schemaAuthorId).equals(currentUserId);
+    });
+
+    if (isAuthorIdMatched) {
+      comment.reactions.like -= 1;
+      const index = comment.reactions.authorIdOfLike.indexOf(currentUserId);
+      comment.reactions.authorIdOfLike.splice(index, 1);
+    }
+    if (!isAuthorIdMatched) {
+      const schemaAuthorIds = comment.reactions.authorIdOfDisLike;
+
+      const isAuthorIdMatched = schemaAuthorIds.some((schemaAuthorId) => {
+        return mongoose.Types.ObjectId(schemaAuthorId).equals(currentUserId);
+      });
+      if (isAuthorIdMatched) {
+        comment.reactions.disLike -= 1;
+        const index =
+          comment.reactions.authorIdOfDisLike.indexOf(currentUserId);
+        comment.reactions.authorIdOfDisLike.splice(index, 1);
+      }
+      comment.reactions.like += 1;
+      comment.reactions.authorIdOfLike.push(currentUserId);
+    }
+  }
+  if (data === "disLike") {
+    const schemaAuthorIds = comment.reactions.authorIdOfDisLike;
+
+    const isAuthorIdMatched = schemaAuthorIds.some((schemaAuthorId) => {
+      return schemaAuthorId.equals(currentUserId);
+    });
+    if (isAuthorIdMatched) {
+      comment.reactions.disLike -= 1;
+      const index = comment.reactions.authorIdOfDisLike.indexOf(currentUserId);
+      comment.reactions.authorIdOfDisLike.splice(index, 1);
+    }
+    if (!isAuthorIdMatched) {
+      const schemaAuthorIds = comment.reactions.authorIdOfLike;
+
+      const isAuthorIdMatched = schemaAuthorIds.some((schemaAuthorId) => {
+        return mongoose.Types.ObjectId(schemaAuthorId).equals(currentUserId);
+      });
+      if (isAuthorIdMatched) {
+        comment.reactions.like -= 1;
+        const index = comment.reactions.authorIdOfLike.indexOf(currentUserId);
+        comment.reactions.authorIdOfLike.splice(index, 1);
+      }
+      comment.reactions.disLike += 1;
+      comment.reactions.authorIdOfDisLike.push(currentUserId);
+    }
+  }
+
+  comment.save();
+  console.log("comment in after updateReactionStory", comment);
+  // Response
+
+  sendResponse(
+    res,
+    200,
+    true,
+    comment,
+    null,
+    "Update Reaction Of comment Successfully"
+  );
 });
 
 module.exports = commentController;

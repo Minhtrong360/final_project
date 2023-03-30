@@ -26,6 +26,15 @@ router.post(
   commentController.saveComment
 );
 
+router.put(
+  "/reaction/:id",
+  authentication.loginRequired,
+  validators.validate([
+    param("id").exists().isString().custom(validators.checkObjectId),
+  ]),
+  commentController.updateReactionComment
+);
+
 /**
  * @route PUT /comments/:id
  * @description Update a comment

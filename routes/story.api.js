@@ -13,6 +13,18 @@ const validators = require("../middlewares/validators");
  */
 router.get("/", storyController.getStories);
 
+router.get(
+  "/user/:userId",
+  authentication.loginRequired,
+  storyController.getStoriesOfUser
+);
+
+router.get(
+  "/user/:userId/loved",
+  authentication.loginRequired,
+  storyController.getLovedStoriesOfUser
+);
+
 /**
  * @route GET /stories/:id
  * @description Get a single story
@@ -53,7 +65,7 @@ router.post(
   validators.validate([
     body("title", "Missing title").exists().notEmpty(),
     body("cover", "Missing cover").exists().notEmpty(),
-    body("genre", "Missing genre").exists().notEmpty(),
+    body("genres", "Missing genres").exists().notEmpty(),
     body("summarize", "Missing summaries' content").exists().notEmpty(),
   ]),
   storyController.createNewStory
@@ -72,6 +84,15 @@ router.put(
     param("id").exists().isString().custom(validators.checkObjectId),
   ]),
   storyController.updateSingleStory
+);
+
+router.put(
+  "/reaction/:id",
+  authentication.loginRequired,
+  validators.validate([
+    param("id").exists().isString().custom(validators.checkObjectId),
+  ]),
+  storyController.updateReactionStory
 );
 
 /**

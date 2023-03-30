@@ -63,8 +63,8 @@ router.post(
   authentication.loginRequired,
   validators.validate([
     param("storyId").exists().isString().custom(validators.checkObjectId),
-    body("number", "Missing Number of chapter").exists().notEmpty(),
-    body("name", "Missing chapter's name").exists().notEmpty(),
+    body("title", "Missing chapter's title").exists().notEmpty(),
+    body("avatar", "Missing chapter's avatar").exists().notEmpty(),
     body("content", "Missing chapter's content").exists().notEmpty(),
   ]),
   chapterController.createNewChapterOfStory
@@ -83,7 +83,7 @@ router.put(
   validators.validate([
     param("chapterId").exists().isString().custom(validators.checkObjectId),
   ]),
-  chapterController.updateChpaterOfStory
+  chapterController.updateChapterOfStory
 );
 // FE tao path dan toi path="/:id/chapters" voi query: "?chapter=1"
 

@@ -26,9 +26,18 @@ authController.loginWithEmail = async (req, res, next) => {
       subscription &&
       moment(new Date()).isSameOrBefore(subscription?.expired)
     ) {
-      user.isSubscription = true;
+      user.subscription = {
+        isSubscription: true,
+        subscription: subscription,
+      };
+    } else {
+      user.subscription = {
+        isSubscription: false,
+        subscription: subscription,
+      };
     }
     user.save();
+
     // Response
 
     sendResponse(

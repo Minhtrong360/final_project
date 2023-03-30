@@ -24,24 +24,33 @@ subscriptionController.registerNewSubscription = catchAsync(
 
     let subscription = await Subscription.find({ author: userId });
 
-    // if (subscription)
-    //   throw new AppError(
-    //     400,
-    //     "Subscription's existed",
-    //     "Register Subscription Error"
-    //   );
+    if (subscription.length > 0) {
+      let date = subscription[0].expired;
 
-    subscription = await Subscription.create({
-      author: userId,
-      timeRegister,
-      expired: expired,
-      paymentMethods,
-    });
+      date.setDate(date.getDate() + Number(duration));
 
-    // Hỏi xem sao mất 1 ngày
+      expired =
+        date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+      subscription[0].expired = expired;
+      subscription[0].save();
+    } else {
+      subscription = await Subscription.create({
+        author: userId,
+        timeRegister,
+        expired: expired,
+        paymentMethods,
+      });
+    }
 
     // Response
+    let user = await User.findById(userId);
+    user.subscription = {
+      isSubscription: true,
+      subscription: subscription,
+    };
 
+    user.save();
     sendResponse(
       res,
       200,
@@ -55,11 +64,11 @@ subscriptionController.registerNewSubscription = catchAsync(
 
 subscriptionController.getSubscription = catchAsync(async (req, res, next) => {
   // Get data from request
-  const subscriptionId = req.params.id;
+  const subscriptionUserId = req.params.userId;
   // Validation
-  let subscription = await Subscription.findById(subscriptionId).populate(
-    "author"
-  );
+  let subscription = await Subscription.find({
+    author: subscriptionUserId,
+  }).populate("author");
   if (!subscription)
     throw new AppError(
       400,

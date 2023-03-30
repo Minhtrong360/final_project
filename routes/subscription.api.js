@@ -30,10 +30,10 @@ router.post(
  * @access Login required
  */
 router.get(
-  "/:id",
+  "/:userId",
   authentication.loginRequired,
   validators.validate([
-    param("id").exists().isString().custom(validators.checkObjectId),
+    param("userId").exists().isString().custom(validators.checkObjectId),
   ]),
   subscriptionController.getSubscription
 );

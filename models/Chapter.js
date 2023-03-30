@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const chapterSchema = Schema(
   {
-    number: { type: Number, require: true },
-    name: { type: String, require: true },
-    content: { type: String, require: true },
+    number: { type: Number, require: false },
+    title: { type: String, require: true },
+    avatar: { type: Object, require: false, default: {} }, //todo: tạm thời false
+    content: { type: Object, require: false, default: {} }, //todo: tạm thời false
     ofStory: { type: Schema.Types.ObjectId, require: true, ref: "Story" },
     isDelete: { type: Boolean, default: false, select: false },
   },

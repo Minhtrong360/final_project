@@ -2,6 +2,9 @@ const User = require("../models/User");
 // const Friend = require("../models/Friend");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const bcrypt = require("bcryptjs");
+const Subscription = require("../models/Subscription");
+const moment = require("moment/moment");
+const mongoose = require("mongoose");
 
 const userController = {};
 
@@ -16,7 +19,8 @@ userController.register = catchAsync(async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   password = await bcrypt.hash(password, salt);
   user = await User.create({ name, email, password });
-  const accessToken = user.generateToken();
+  const accessToken = await user.generateToken();
+
   // Response
 
   sendResponse(
@@ -75,8 +79,26 @@ userController.getCurrentUser = catchAsync(async (req, res, next) => {
   let currentUserId = req.userId;
   // Validation
   let user = await User.findById(currentUserId);
+
   if (!user)
     throw new AppError(400, "User's not found", "Get Current User Error");
+
+  const subscription = await Subscription.findOne({ author: user._id });
+
+  if (
+    subscription &&
+    moment(new Date()).isSameOrBefore(subscription?.expired)
+  ) {
+    user.subscription = {
+      isSubscription: true,
+      subscription: subscription,
+    };
+  } else {
+    user.subscription = {
+      isSubscription: false,
+    };
+  }
+  user.save();
   // Process
 
   // Response
@@ -113,12 +135,18 @@ userController.updateProfile = catchAsync(async (req, res, next) => {
   // Process
   const allows = [
     "name",
-    "coverUrl",
+    "cover",
     "gender",
     "address",
+    "city",
+    "country",
     "birthday",
     "phoneNumber",
-    "ID",
+    "aboutMe",
+    "facebookLink",
+    "instagramLink",
+    "linkedinLink",
+    "twitterLink",
   ];
 
   allows.forEach((field) => {
@@ -131,6 +159,41 @@ userController.updateProfile = catchAsync(async (req, res, next) => {
   // Response
 
   sendResponse(res, 200, true, user, null, "Update User Successfully");
+});
+
+userController.updateLovedStory = catchAsync(async (req, res, next) => {
+  // Get data from request
+  let currentUserId = req.userId;
+  const userId = req.params.id;
+
+  // Validation
+
+  if (currentUserId !== userId)
+    throw new AppError(400, "Permission Requird", "Update User Error");
+
+  let user = await User.findById(userId);
+  if (!user) throw new AppError(400, "User's not found", "Update User Error");
+
+  // Process
+
+  const schemaStoryIds = user.lovedStory;
+
+  const isStoryIdMatched = schemaStoryIds.some((schemaStoryId) => {
+    return mongoose.Types.ObjectId(schemaStoryId).equals(req.body.lovedStory);
+  });
+  if (isStoryIdMatched) {
+    const index = user.lovedStory.indexOf(req.body.lovedStory);
+
+    user.lovedStory.splice(index, 1);
+  }
+  if (!isStoryIdMatched) {
+    user.lovedStory.push(req.body.lovedStory);
+  }
+
+  await user.save();
+  // Response
+
+  sendResponse(res, 200, true, user, null, "Update LovedStory Successfully");
 });
 
 module.exports = userController;
