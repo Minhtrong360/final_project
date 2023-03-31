@@ -1,0 +1,171 @@
+[{
+  "_id": {
+    "$oid": "6421b467da8d27e90b9c1d60"
+  },
+  "name": "Nguyễn Minh Trọng",
+  "email": "trong1@gmail.com",
+  "password": "$2a$10$3cEEenyf.tbqxSZSwWnibOacjMx0gJOtFBVHSaH0elhiY39ReyGZi",
+  "address": "",
+  "city": "",
+  "country": "",
+  "aboutMe": "",
+  "birthday": null,
+  "phoneNumber": null,
+  "facebookLink": "",
+  "instagramLink": "",
+  "linkedinLink": "",
+  "twitterLink": "",
+  "isDelete": false,
+  "lovedStory": [],
+  "storyCount": 4,
+  "createdAt": {
+    "$date": "2023-03-27T15:21:11.304Z"
+  },
+  "updatedAt": {
+    "$date": "2023-03-27T15:45:27.068Z"
+  },
+  "__v": 0,
+  "cover": {},
+  "subscription": {
+    "isSubscription": true,
+    "subscription": {
+      "_id": {
+        "$oid": "6421b47dda8d27e90b9c1d65"
+      },
+      "author": {
+        "$oid": "6421b467da8d27e90b9c1d60"
+      },
+      "timeRegister": {
+        "$date": "2023-03-27T15:21:33.583Z"
+      },
+      "expired": {
+        "$date": "2023-05-25T17:00:00.000Z"
+      },
+      "createdAt": {
+        "$date": "2023-03-27T15:21:33.605Z"
+      },
+      "updatedAt": {
+        "$date": "2023-03-27T15:21:57.176Z"
+      },
+      "__v": 0
+    }
+  }
+},{
+  "_id": {
+    "$oid": "64229b51f194b4dd65b02148"
+  },
+  "name": "Trong Nguyen",
+  "email": "trong2@gmail.com",
+  "password": "$2a$10$yVZF7zALy2WrZvFVSxVeYuxsq0UL72XtrONEm3CM7gMvxeYcvf.GS",
+  "address": "Tam Binh, Cai Lay, Tien Giang",
+  "city": "Tiền Giang",
+  "country": "Vietnam",
+  "aboutMe": "",
+  "birthday": {
+    "$date": "2023-03-10T00:00:00.000Z"
+  },
+  "phoneNumber": 385132402,
+  "facebookLink": "",
+  "instagramLink": "",
+  "linkedinLink": "",
+  "twitterLink": "",
+  "isDelete": false,
+  "lovedStory": [
+    "6423057eecd272b87fc86e9e",
+    null,
+    "6423c579f15fe932b41d5790"
+  ],
+  "storyCount": 48,
+  "createdAt": {
+    "$date": "2023-03-28T07:46:25.621Z"
+  },
+  "updatedAt": {
+    "$date": "2023-03-31T02:56:54.021Z"
+  },
+  "__v": 3,
+  "cover": "http://localhost:5500/images/1680231413980.jpg",
+  "subscription": {
+    "isSubscription": true,
+    "subscription": {
+      "_id": {
+        "$oid": "64229b7cf194b4dd65b0214d"
+      },
+      "author": {
+        "$oid": "64229b51f194b4dd65b02148"
+      },
+      "timeRegister": {
+        "$date": "2023-03-28T07:47:08.908Z"
+      },
+      "expired": {
+        "$date": "2023-05-26T17:00:00.000Z"
+      },
+      "createdAt": {
+        "$date": "2023-03-28T07:47:08.932Z"
+      },
+      "updatedAt": {
+        "$date": "2023-03-30T11:44:16.538Z"
+      },
+      "__v": 0
+    }
+  },
+  "gender": "Male"
+},{
+  "_id": {
+    "$oid": "6424fcdcb39bae354cf49ddf"
+  },
+  "name": "Trọng Nguyễn Minh",
+  "email": "trong999@gmail.com",
+  "password": "$2a$10$soKAwZmmn07r553muTuBPOFboUxz3Y7yX38tB8nbeHQG3HvizxfEG",
+  "address": "ấp Đông Hòa, xã Tam Bình, huyện Cai Lậy",
+  "city": "Tiền Giang",
+  "country": "Vietnam",
+  "aboutMe": "",
+  "birthday": {
+    "$date": "2023-03-08T00:00:00.000Z"
+  },
+  "phoneNumber": 385132402,
+  "facebookLink": "https://www.facebook.com/",
+  "instagramLink": "...",
+  "linkedinLink": "...",
+  "twitterLink": "...",
+  "isDelete": false,
+  "lovedStory": [
+    "6423eb18f15fe932b41d57d3",
+    "6424fdb2b39bae354cf49e53",
+    "6423c5f3f15fe932b41d579e"
+  ],
+  "storyCount": 1,
+  "createdAt": {
+    "$date": "2023-03-30T03:07:08.858Z"
+  },
+  "updatedAt": {
+    "$date": "2023-03-30T03:19:21.573Z"
+  },
+  "__v": 5,
+  "cover": "http://localhost:5500/images/1680145683460.jpg",
+  "gender": "Male",
+  "subscription": {
+    "isSubscription": true,
+    "subscription": {
+      "_id": {
+        "$oid": "6424fd5db39bae354cf49e4b"
+      },
+      "author": {
+        "$oid": "6424fcdcb39bae354cf49ddf"
+      },
+      "timeRegister": {
+        "$date": "2023-03-30T03:09:17.364Z"
+      },
+      "expired": {
+        "$date": "2023-04-29T03:09:17.364Z"
+      },
+      "createdAt": {
+        "$date": "2023-03-30T03:09:17.394Z"
+      },
+      "updatedAt": {
+        "$date": "2023-03-30T03:09:17.394Z"
+      },
+      "__v": 0
+    }
+  }
+}]

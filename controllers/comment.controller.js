@@ -12,9 +12,7 @@ commentController.saveComment = catchAsync(async (req, res, next) => {
 
   // Check targetType exists
   const targetObj = await mongoose.model(targetType).find({ targetId });
-  console.log("targetType trong comment controllers", targetType);
-  console.log("targetId trong comment controllers", targetId);
-  console.log("content trong comment controllers", content);
+
   if (!targetObj)
     throw new AppError(400, `${targetType} not found`, "Create Comment Error");
   let comment = await Comment.create({
@@ -24,6 +22,7 @@ commentController.saveComment = catchAsync(async (req, res, next) => {
     content,
   });
   await comment.populate("targetId");
+  await comment.populate("author");
 
   return sendResponse(res, 200, true, comment, null, "Save Comment Success");
 });

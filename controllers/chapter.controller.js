@@ -58,7 +58,7 @@ chapterController.getSingleChapterOfStory = catchAsync(
     const chapterId = req.params.chapterId;
     // Validation
     let chapter = await Chapter.findById(chapterId);
-    chapter = await chapter.populate("ofStory");
+
     if (!chapter)
       throw new AppError(
         400,
@@ -66,7 +66,7 @@ chapterController.getSingleChapterOfStory = catchAsync(
         "Get Single Chapter Error"
       );
     // Process
-
+    chapter = await chapter.populate("ofStory");
     // Response
 
     sendResponse(
@@ -99,7 +99,8 @@ chapterController.getCommentOfChapterOfStory = catchAsync(
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit)
-      .populate("targetId");
+      .populate("targetId")
+      .populate("author");
     // Response
 
     sendResponse(
