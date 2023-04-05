@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 app.use("/", indexRouter);
-app.use("/images", express.static("public/images"));
+// app.use("/images", express.static("public/images"));
 //Upload image to sever side
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

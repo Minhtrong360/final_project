@@ -383,7 +383,7 @@ storyController.deleteAllStories = catchAsync(async (req, res, next) => {
   // Get data from request
 
   // Process
-  const chapter = await Chapter.find({});
+  const chapter = await Chapter.deleteMany({});
 
   // Response
 
