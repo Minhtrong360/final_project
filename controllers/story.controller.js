@@ -3,7 +3,6 @@ const User = require("../models/User");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
-const Chapter = require("../models/Chapter");
 
 const storyController = {};
 
@@ -80,12 +79,16 @@ storyController.getStoriesOfUser = catchAsync(async (req, res, next) => {
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
+  console.log("filterCriteria in story.controller", filterCriteria);
+
   let stories = await Story.find(filterCriteria)
     .sort({ createdAt: -1 })
     .skip(offset)
     .limit(limit);
 
   // Response
+
+  console.log("stories in story.controller", stories);
 
   sendResponse(
     res,
@@ -103,16 +106,17 @@ storyController.getLovedStoriesOfUser = catchAsync(async (req, res, next) => {
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
-
+  console.log("userId in getLovedStoriesOfUser:", userId);
   // Validation
   const user = await User.findById(userId);
   let lovedStoriesId = user?.lovedStory || [];
-
+  console.log("lovedStoriesId in getLovedStoriesOfUser:", lovedStoriesId);
   // Process
 
   const stories = await Story.find({ _id: { $in: lovedStoriesId } })
     .sort({ createdAt: -1 })
     .limit(limit);
+  console.log("stories in getLovedStoriesOfUser", stories);
 
   // Response
 
@@ -137,7 +141,6 @@ storyController.getSingleStory = catchAsync(async (req, res, next) => {
   // Process
   story.view += 1;
   story.save();
-
   // Response
 
   sendResponse(res, 200, true, story, null, "Get Single Story Successfully");

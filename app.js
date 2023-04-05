@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 app.use("/", indexRouter);
-app.use("/images", express.static("public/images"));
+
 //Upload image to sever side
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -40,9 +40,12 @@ app.post("/api/uploadImages", upload.array("files"), (req, res) => {
       return res.status(400).json({ message: "No files uploaded" });
     }
 
-    const imageUrls = req.files.map((file) => `/images/${file.filename}`);
+    const imageUrls = req.files.map(
+      (file) => `${req.protocol}://${req.get("host")}/images/${file.filename}`
+    );
 
     res.json({ imageUrls });
+    console.log("respone in app.js", res.json({ imageUrls }));
   } catch (error) {
     sendResponse(res, 400, null, null, "Upload File Error", error.message);
   }
