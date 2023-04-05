@@ -81,10 +81,10 @@ commentController.updateReactionComment = catchAsync(async (req, res, next) => {
   const commentId = req.params.id;
   const { data } = req.body;
   // Validation
-  console.log("data in updateReactionStory", data);
+
   // Process
   const comment = await Comment.findById(commentId);
-  console.log("story in updateReactionStory", comment);
+
   if (!comment)
     throw new AppError(
       400,
@@ -148,7 +148,7 @@ commentController.updateReactionComment = catchAsync(async (req, res, next) => {
   }
 
   comment.save();
-  console.log("comment in after updateReactionStory", comment);
+
   // Response
 
   sendResponse(

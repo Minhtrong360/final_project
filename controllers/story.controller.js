@@ -79,16 +79,12 @@ storyController.getStoriesOfUser = catchAsync(async (req, res, next) => {
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
-  console.log("filterCriteria in story.controller", filterCriteria);
-
   let stories = await Story.find(filterCriteria)
     .sort({ createdAt: -1 })
     .skip(offset)
     .limit(limit);
 
   // Response
-
-  console.log("stories in story.controller", stories);
 
   sendResponse(
     res,
@@ -106,17 +102,16 @@ storyController.getLovedStoriesOfUser = catchAsync(async (req, res, next) => {
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
-  console.log("userId in getLovedStoriesOfUser:", userId);
+
   // Validation
   const user = await User.findById(userId);
   let lovedStoriesId = user?.lovedStory || [];
-  console.log("lovedStoriesId in getLovedStoriesOfUser:", lovedStoriesId);
+
   // Process
 
   const stories = await Story.find({ _id: { $in: lovedStoriesId } })
     .sort({ createdAt: -1 })
     .limit(limit);
-  console.log("stories in getLovedStoriesOfUser", stories);
 
   // Response
 
@@ -170,7 +165,7 @@ storyController.getCommentOfStory = catchAsync(async (req, res, next) => {
     .limit(limit)
     .populate("author");
   // Response
-  console.log("count", comments);
+
   sendResponse(
     res,
     200,
@@ -190,7 +185,7 @@ storyController.createNewStory = catchAsync(async (req, res, next) => {
   // Validation
 
   const user = await User.findById(currentUserId);
-  console.log("user in story.controller", user);
+
   if (!user.subscription.isSubscription)
     throw new AppError(
       400,
@@ -263,8 +258,6 @@ storyController.updateSingleStory = catchAsync(async (req, res, next) => {
 
   allows.forEach(async (field) => {
     if (data[field] !== undefined) {
-      console.log("data[field]", data[field], "=", "story[field]", data[field]);
-
       story[field] = data[field];
     }
   });
@@ -305,10 +298,10 @@ storyController.updateReactionStory = catchAsync(async (req, res, next) => {
   const storyId = req.params.id;
   const { data } = req.body;
   // Validation
-  console.log("data in updateReactionStory", data);
+
   // Process
   const story = await Story.findById(storyId);
-  console.log("story in updateReactionStory", story);
+
   if (!story)
     throw new AppError(
       400,
@@ -371,7 +364,7 @@ storyController.updateReactionStory = catchAsync(async (req, res, next) => {
   }
 
   story.save();
-  console.log("story in after updateReactionStory", story);
+
   // Response
 
   sendResponse(

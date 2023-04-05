@@ -123,8 +123,6 @@ chapterController.createNewChapterOfStory = catchAsync(
     let { title, avatar, content } = req.body;
     // Validation
 
-    console.log("content BE", content);
-
     const user = await User.findById(currentUserId);
 
     if (!user?.subscription?.isSubscription)
@@ -164,7 +162,6 @@ chapterController.createNewChapterOfStory = catchAsync(
 
     await calculatChapterCount(storyId);
 
-    console.log("createNewChapterOfStory", chapter);
     chapter = await chapter.populate("ofStory");
 
     // Response
@@ -179,7 +176,6 @@ chapterController.updateChapterOfStory = catchAsync(async (req, res, next) => {
   const chapterId = req.params.chapterId;
   let { updateData } = req.body;
   // Validation
-  console.log("data truyền vào để update:", updateData);
 
   const user = await User.findById(currentUserId);
 

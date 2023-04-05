@@ -53,7 +53,7 @@ userController.getUsers = catchAsync(async (req, res, next) => {
   // Process
 
   const count = await User.countDocuments(filterCriteria);
-  console.log("fourth", count);
+
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
