@@ -260,6 +260,8 @@ storyController.updateSingleStory = catchAsync(async (req, res, next) => {
 
   allows.forEach(async (field) => {
     if (data[field] !== undefined) {
+      console.log("data[field]", data[field], "=", "story[field]", data[field]);
+
       story[field] = data[field];
     }
   });

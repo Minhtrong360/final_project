@@ -1,12 +1,10 @@
-## NO NAME
+## TRUYENCUABAN
 
-This project is designed to create an interactive web-based story reading experience. The goal is to create a platform for users to read stories, complete quizzes, and receive feedback on their progress.
+This project is designed to create an interactive web-based story reading experience. The goal is to create a platform for users to read stories and receive feedback on their progress.
 
-It will feature an interactive story page, a quiz page, and a progress page. The story page will feature text, images, and audio to tell a story. The quiz page will have multiple choice questions related to the story. The progress page will track the user's progress through the story and quiz.
+It will feature an interactive story page. The story page will feature text, images to tell a story. User can create your story to share with the other. If there stories have a high view, they will be payed for that.
 
-Users will be able to enjoy an interactive story reading experience.
-
-## Collection Story Model
+## Story Collection
 
 - []: Story titles, cover, authors, genres, summaries, createdAt.
 - []: Story is separated by chapters.
@@ -16,19 +14,19 @@ Users will be able to enjoy an interactive story reading experience.
 ## Chapter collection
 
 - []: number of Chapters, chapter's name, content.
-  \*\*\* Story's content: text, image, audio, video.
+- Story's content: text, image.
 
-### A story can have many chapter (one way relationship)
+### A story can have many chapter (one to many)
 
-## Story's Comment collection
+## Comment collection
 
 - []: Comment content (text, image).
 
-### Comment and Chapter: a comment come with a chapter (one way)
+### Comment and Chapter: a comment come with a chapter (one to many)
 
-### Comment and User: A user can make many comment (one way)
+### Comment and User: A user can make many comment (one to many)
 
-## Collection User Model:
+## Collection User:
 
 \*\*\* Reader
 
@@ -42,16 +40,14 @@ Users will be able to enjoy an interactive story reading experience.
 - []: User story: Total written, viewed, liked, shared stories.
 - []: User can see liked, shared stories.
 
-\*\*\*\* User can create new account or sign in with Google, Facebook. After register an account, User can update Account Name, Cover, Gender, Address, Date of Birth, Phone number, ID. User need a purchase to be a writter.
+\*\*\*\* User can create new account. After register an account, User can update Account Name, Cover, Gender, Address, Date of Birth, Phone number, ... User need a purchase to be a writter.
 
 ## Subcription:
 
 - []: Register time, Expired.
-- []: phuong thuc thanh toan (optional)
+- []: Payment method (optional)
 
 ### A user can be subcribe or not (one to one)
-
-#### Đưa response cứng, lấy res đó build FE. Build xong FE rồi nối DB sau.
 
 ## ROUTE
 
@@ -240,7 +236,7 @@ Users will be able to enjoy an interactive story reading experience.
 - @access Login required
   \*/
 
-### subscription
+### Subscription
 
 /\*\* Register subscription to be writter
 
