@@ -1,8 +1,10 @@
 const Story = require("../models/Story");
+
 const User = require("../models/User");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
+const Chapter = require("../models/Chapter");
 
 const storyController = {};
 
@@ -375,6 +377,17 @@ storyController.updateReactionStory = catchAsync(async (req, res, next) => {
     null,
     "Update Reaction Of Story Successfully"
   );
+});
+
+storyController.deleteAllStories = catchAsync(async (req, res, next) => {
+  // Get data from request
+
+  // Process
+  const chapter = await Chapter.find({});
+
+  // Response
+
+  sendResponse(res, 200, true, story, null, "Delete Story Successfully");
 });
 
 module.exports = storyController;

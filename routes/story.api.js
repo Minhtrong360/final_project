@@ -111,4 +111,10 @@ router.delete(
   storyController.deleteSingleStory
 );
 
+router.delete(
+  "/deleteMany",
+
+  storyController.deleteAllStories
+);
+
 module.exports = router;
