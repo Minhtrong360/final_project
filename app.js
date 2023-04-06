@@ -43,7 +43,6 @@ app.post("/api/uploadImages", upload.array("files"), (req, res) => {
     const imageUrls = req.files.map((file) => `images/${file.filename}`);
 
     res.json({ imageUrls });
-    console.log("respone in app.js", res.json({ imageUrls }));
   } catch (error) {
     sendResponse(res, 400, null, null, "Upload File Error", error.message);
   }
