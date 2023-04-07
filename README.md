@@ -53,7 +53,7 @@ It will feature an interactive story page. The story page will feature text, ima
 
 ### Authentication
 
-/\*\* Login with account
+\*\* Login with account
 
 - @route POST /auth/login
 - @description Log in with username and password
@@ -63,7 +63,7 @@ It will feature an interactive story page. The story page will feature text, ima
 
 ### User
 
-/\*\* Create new account
+\*\* Create new account
 
 - @route POST /users
 - @description Register new user
@@ -71,7 +71,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public
   \*/
 
-/\*\* Get all users (For admin)
+\*\* Get all users (For admin)
 
 - @route GET /users/page=1?&limit=10
 - @description Get user with pagination
@@ -79,7 +79,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\* Get a user (For admin)
+\*\* Get a user (For admin)
 
 - @route GET /users/:id
 - @description Get user profile
@@ -87,7 +87,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\*
+\*\*
 
 - @route GET /users/me
 - @description Get current user info
@@ -95,7 +95,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\*
+\*\*
 
 - @route PUT /users/:id
 - @description Update user profile
@@ -105,7 +105,7 @@ It will feature an interactive story page. The story page will feature text, ima
 
 ### Story
 
-/\*\*
+\*\*
 
 - @route GET /stories/:genre?page=1&limit=10
 - @description Get all stories by genre with pagination
@@ -113,7 +113,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public access
   \*/
 
-/\*\*
+\*\*
 
 - @route GET /stories/:id
 - @description Get a single story
@@ -121,7 +121,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public access
   \*/
 
-/\*\* Get comments outside the story
+\*\* Get comments outside the story
 
 - @route GET /stories/:id/comments
 - @description Get comments of a story
@@ -129,7 +129,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public access
   \*/
 
-/\*\* Create story (For writter)
+\*\* Create story (For writter)
 
 - @route POST /stories
 - @description Create a new story
@@ -137,25 +137,24 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login reuqired
   \*/
 
-/\*\* (Cannot update content here) (For writter)
+\*\* (Cannot update content here) (For writter)
 
 - @route PUT /stories/:id
-- @description Update a story
+- - @description Update a story
 - @body {titles, cover, authors, genres, summaries}
 - @access Login required
   \*/
 
-  /\*\* (For writter)
+  \*\* (For writter)
 
 - @route DELETE /stories/:id
 - @description Delete a story
 - @body
 - @access Login required
-  \*/
 
 ### Chapter
 
-/\*\*
+\*\*
 
 - @route GET /stories/chapters?page=1&limit=10
 - @description Get all chapters of a story with pagination
@@ -163,7 +162,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public access
   \*/
 
-/\*\*
+\*\*
 
 - @route GET /stories/chapters/:id
 - @description Get a single chapter
@@ -171,7 +170,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public access
   \*/
 
-/\*\* Comments inside a chapter
+\*\* Comments inside a chapter
 
 - @route GET /stories/chapters/:id/comments
 - @description Get comments of a chapter
@@ -179,7 +178,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Public access
   \*/
 
-/\*\* Create chapters (For writter)
+\*\* Create chapters (For writter)
 
 - @route POST /stories/:id
 - @description Create a new chapter of a story
@@ -187,25 +186,24 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login reuqired
   \*/
 
-/\*\* (For writter)
+\*\* (For writter)
 
-- @route PUT /stories/:id?chapter=1
+- @route PUT /:id?chapter=1
 - @description Update a chapter of a story
-- @body {NO. of Chapter, chapter's name, content}
+- @body { chapter's name, content}
 - @access Login required
   \*/
 
-  /\*\* (For writter)
+\*\* (For writter)
 
 - @route DELETE /stories/:id?chapter=1
 - @description Delete a chapter of a story
 - @body
 - @access Login required
-  \*/
 
 ### Comment
 
-/\*\*
+\*\* Create comment
 
 - @route POST /comments
 - @description Create a new comment
@@ -213,14 +211,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-<!-- /**
-* @route GET /comments/:id
-* @description Get details of a comment
-* @body
-* @access Login required
-*/ -->
-
-/\*\*
+\*\* Update comment
 
 - @route PUT /comment:id
 - @description Update a comment
@@ -228,17 +219,16 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\*
+\*\* Delete comment
 
 - @route DELETE comments/:id
 - @description Delete a comment
 - @body
 - @access Login required
-  \*/
 
 ### Subscription
 
-/\*\* Register subscription to be writter
+\*\* Register subscription to be writter
 
 - @route POST subscriptions/user/:id
 - @description Register new subscription
@@ -246,7 +236,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\* GET subscription of a user
+\*\* GET subscription of a user
 
 - @route GET subscriptions/user/:id
 - @description Get subscription of a user
@@ -254,7 +244,7 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\* Update subscription of a user
+\*\* Update subscription of a user
 
 - @route PUT subscriptions/user/:id
 - @description Update subscription of a user
@@ -262,10 +252,13 @@ It will feature an interactive story page. The story page will feature text, ima
 - @access Login required
   \*/
 
-/\*\* Not extend subscription of a user
+\*\* Not extend subscription of a user
 
 - @route DELETE subscriptions/user/:id
 - @description Delete subscription of a user
 - @body
 - @access Login required
-  \*/
+
+## Entity Relationship Diagram
+
+![](https://i.imgur.com/O7WDblx.png)
