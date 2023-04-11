@@ -108,9 +108,11 @@ storyController.getLovedStoriesOfUser = catchAsync(async (req, res, next) => {
   // Validation
   const user = await User.findById(userId);
   let lovedStoriesId = user?.lovedStory || [];
-  const offset = limit * (page - 1);
-  // Process
 
+  // Process
+  const count = await Story.countDocuments({ _id: { $in: lovedStoriesId } });
+  const totalPages = Math.ceil(count / limit);
+  const offset = limit * (page - 1);
   const stories = await Story.find({ _id: { $in: lovedStoriesId } })
     .sort({ createdAt: -1 })
     .skip(offset)
@@ -122,7 +124,7 @@ storyController.getLovedStoriesOfUser = catchAsync(async (req, res, next) => {
     res,
     200,
     true,
-    { stories },
+    { stories, totalPages, count },
     null,
     "Get LovedStories Successfully"
   );
