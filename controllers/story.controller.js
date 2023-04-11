@@ -21,7 +21,7 @@ storyController.getStories = catchAsync(async (req, res, next) => {
 
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
+  limit = parseInt(limit) || 8;
 
   // Validation
   const filterConditions = [{ isDelete: false }];
@@ -62,8 +62,8 @@ storyController.getStoriesOfUser = catchAsync(async (req, res, next) => {
   let userId = req.params.userId;
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
-
+  limit = parseInt(limit) || 8;
+  console.log("getStoriesOfUser", page, "page", limit, "limit");
   // Validation
   const filterConditions = [{ isDelete: false, authorId: userId }];
   if (filter.name) {
@@ -103,16 +103,17 @@ storyController.getLovedStoriesOfUser = catchAsync(async (req, res, next) => {
   let userId = req.params.userId;
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
+  limit = parseInt(limit) || 8;
 
   // Validation
   const user = await User.findById(userId);
   let lovedStoriesId = user?.lovedStory || [];
-
+  const offset = limit * (page - 1);
   // Process
 
   const stories = await Story.find({ _id: { $in: lovedStoriesId } })
     .sort({ createdAt: -1 })
+    .skip(offset)
     .limit(limit);
 
   // Response

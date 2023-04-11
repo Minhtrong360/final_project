@@ -22,31 +22,31 @@ app.use(cors());
 
 app.use("/", indexRouter);
 
-//Upload image to sever side
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/images");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// //Upload image to sever side
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "public/images");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
-app.post("/api/uploadImages", upload.array("files"), (req, res) => {
-  try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No files uploaded" });
-    }
+// app.post("/api/uploadImages", upload.array("files"), (req, res) => {
+//   try {
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No files uploaded" });
+//     }
 
-    const imageUrls = req.files.map((file) => `images/${file.filename}`);
+//     const imageUrls = req.files.map((file) => `images/${file.filename}`);
 
-    res.json({ imageUrls });
-  } catch (error) {
-    sendResponse(res, 400, null, null, "Upload File Error", error.message);
-  }
-});
+//     res.json({ imageUrls });
+//   } catch (error) {
+//     sendResponse(res, 400, null, null, "Upload File Error", error.message);
+//   }
+// });
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
