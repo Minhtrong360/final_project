@@ -31,6 +31,11 @@ router.post(
  * @access Login required
  */
 router.get("/", authentication.loginRequired, userController.getUsers);
+router.get(
+  "/subscribed",
+  authentication.loginRequired,
+  userController.getUsersSubscribed
+);
 
 /**
  * @route GET /users/me
@@ -74,5 +79,14 @@ router.put(
     param("id").exists().isString().custom(validators.checkObjectId),
   ]),
   userController.updateLovedStory
+);
+
+router.delete(
+  "/:id",
+  authentication.loginRequired,
+  validators.validate([
+    param("id").exists().isString().custom(validators.checkObjectId),
+  ]),
+  userController.deleteUser
 );
 module.exports = router;

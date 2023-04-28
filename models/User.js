@@ -8,7 +8,7 @@ const userSchema = Schema(
     name: { type: String, require: true },
     email: { type: String, require: true, unique: true },
     password: { type: String, require: true, select: false },
-
+    admin: { type: Boolean, require: true },
     cover: { type: Object, require: false, default: {} },
     gender: {
       type: String,

@@ -12,6 +12,7 @@ const validators = require("../middlewares/validators");
  * @access Public access
  */
 router.get("/", storyController.getStories);
+// router.get("/fixGenres", storyController.fixGenres);
 
 router.get(
   "/user/:userId",
@@ -23,6 +24,23 @@ router.get(
   "/user/:userId/loved",
   authentication.loginRequired,
   storyController.getLovedStoriesOfUser
+);
+
+// Genres
+router.get("/genres", authentication.loginRequired, storyController.getGenres);
+
+router.post(
+  "/genres",
+  authentication.loginRequired,
+  validators.validate([body("genresName", "Missing info").exists().notEmpty()]),
+  storyController.postGenre
+);
+
+router.delete(
+  "/genres",
+  authentication.loginRequired,
+  validators.validate([body("genresName", "Missing info").exists().notEmpty()]),
+  storyController.deleteGenre
 );
 
 /**
@@ -109,12 +127,6 @@ router.delete(
     param("id").exists().isString().custom(validators.checkObjectId),
   ]),
   storyController.deleteSingleStory
-);
-
-router.delete(
-  "/deleteMany",
-
-  storyController.deleteAllStories
 );
 
 module.exports = router;

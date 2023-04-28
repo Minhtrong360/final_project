@@ -3,6 +3,7 @@ const Comment = require("../models/Comment");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const mongoose = require("mongoose");
 const Story = require("../models/Story");
+const User = require("../models/User");
 
 const commentController = {};
 
@@ -56,23 +57,28 @@ commentController.deleteSingleComment = catchAsync(async (req, res, next) => {
   // Get data from request
   let currentUserId = req.userId;
   let commentId = req.params.id;
+  const isAdmin = await User.findById(currentUserId);
 
   // Validation
-  let comment = await Comment.findByIdAndDelete({
-    _id: commentId,
-    author: currentUserId,
-  });
-  if (!comment)
+  let comment = await Comment.findById(commentId);
+
+  if (!comment) {
+    throw new AppError(400, "Comment not found", "Delete Comment Error");
+  }
+
+  if (isAdmin.admin || comment.author == currentUserId) {
+    // Process
+    await Comment.findByIdAndDelete(commentId);
+
+    // Response
+    sendResponse(res, 200, true, null, null, "Delete Comment Successfully");
+  } else {
     throw new AppError(
-      400,
-      "Comment not found or User not authorized",
+      401,
+      "User not authorized to delete comment",
       "Delete Comment Error"
     );
-
-  // Process
-
-  // Response
-  sendResponse(res, 200, true, comment, null, "Delete Comment Successfully");
+  }
 });
 
 commentController.updateReactionComment = catchAsync(async (req, res, next) => {

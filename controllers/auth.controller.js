@@ -3,6 +3,7 @@ const Subscription = require("../models/Subscription");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const bcrypt = require("bcryptjs");
 const moment = require("moment/moment");
+const Status = require("../models/Status");
 const authController = {};
 
 authController.loginWithEmail = async (req, res, next) => {
@@ -37,6 +38,17 @@ authController.loginWithEmail = async (req, res, next) => {
       };
     }
     user.save();
+
+    // Update the login count in the Status model
+    const status = await Status.findOne({
+      start_at: { $lte: new Date() },
+      end_at: { $gte: new Date() },
+    });
+    if (status) {
+      status.login += 1;
+      await status.save();
+    }
+    console.log("status", status);
 
     // Response
 

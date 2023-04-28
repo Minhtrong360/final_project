@@ -6,6 +6,24 @@ const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
 const Chapter = require("../models/Chapter");
 
+let allowGenres = [
+  "Action",
+  "Adventure",
+  "Chuyển sinh",
+  "Comedy",
+  "Cổ đại",
+  "Drama",
+  "Fantasy",
+  "Manhwa",
+  "Magic",
+  "Mystery",
+  "Ngôn tình",
+  "Thể thao",
+  "Trọng sinh",
+  "Truyện màu",
+  "Xuyên không",
+];
+
 const storyController = {};
 
 const calculateStoryCount = async (userId) => {
@@ -275,25 +293,33 @@ storyController.updateSingleStory = catchAsync(async (req, res, next) => {
 
 storyController.deleteSingleStory = catchAsync(async (req, res, next) => {
   // Get data from request
-  let currentUserId = req.userId;
+  const currentUserId = req.userId;
   const storyId = req.params.id;
+
   // Validation
+  const user = await User.findById(currentUserId);
 
   // Process
-  const story = await Story.findByIdAndUpdate(
-    { _id: storyId, author: currentUserId },
+  let query = { _id: storyId, author: currentUserId };
+  if (user.admin) {
+    query = { _id: storyId };
+  }
+
+  const story = await Story.findOneAndUpdate(
+    query,
     { isDelete: true },
     { new: true }
   );
-  if (!story)
+
+  if (!story) {
     throw new AppError(
       400,
       "Story is not found or User not authorized",
       "Delete Single Story Error"
     );
-  await calculateStoryCount(currentUserId);
-  // Response
+  }
 
+  // Response
   sendResponse(res, 200, true, story, null, "Delete Story Successfully");
 });
 
@@ -391,6 +417,85 @@ storyController.deleteAllStories = catchAsync(async (req, res, next) => {
   // Response
 
   sendResponse(res, 200, true, story, null, "Delete Story Successfully");
+});
+
+// storyController.fixGenres = catchAsync(async (req, res, next) => {
+//   // Get data from request
+
+//   // Process
+
+//   let stories = await Story.find({});
+//   stories.forEach((story) => {
+//     // Loop through each story
+//     let genres = story.genres; // Get the genres of the current story
+//     let genreArray = genres.split(", "); // Convert the genres from a string into an array
+//     story.genres = genreArray; // Set the genres of the current story to the new array
+//     story.save((err) => {
+//       // Save the updated story to the database
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         console.log(`Genres updated for story with ID ${story._id}`);
+//       }
+//     });
+//   });
+//   console.log("fixGenres", stories);
+//   // Response
+
+//   sendResponse(res, 200, true, { stories }, null, "Get Stories Successfully");
+// });
+
+// Genres
+storyController.getGenres = catchAsync(async (req, res, next) => {
+  // Get data from request
+  let currentUserId = req.userId;
+
+  // Validation
+  const isAdmin = await User.findById(currentUserId);
+  if (isAdmin.admin === true) {
+    sendResponse(res, 200, true, allowGenres, null, "Get Genres Successfully");
+  } else {
+    throw new AppError(401, "Admin requird", "Get Genres Error");
+  }
+});
+
+storyController.postGenre = catchAsync(async (req, res, next) => {
+  // Get data from request
+  let currentUserId = req.userId;
+
+  // Validation
+  const isAdmin = await User.findById(currentUserId);
+  if (isAdmin.admin === true) {
+    let newGenres = req.body.genresName;
+    allowGenres.push(newGenres);
+    console.log("allowGenres", allowGenres);
+    sendResponse(res, 200, true, allowGenres, null, "Post Genres Successfully");
+  } else {
+    throw new AppError(401, "Admin requird", "Post Genres Error");
+  }
+});
+
+storyController.deleteGenre = catchAsync(async (req, res, next) => {
+  // Get data from request
+  let currentUserId = req.userId;
+
+  // Validation
+  const isAdmin = await User.findById(currentUserId);
+  if (isAdmin.admin === true) {
+    let newGenres = req.body.genresName;
+    allowGenres = allowGenres.filter((genre) => genre !== newGenres); // remove newGenres from allowGenres
+    console.log("allowGenres", allowGenres);
+    sendResponse(
+      res,
+      200,
+      true,
+      allowGenres,
+      null,
+      "Delete Genres Successfully"
+    );
+  } else {
+    throw new AppError(401, "Admin required", "Delete Genres Error");
+  }
 });
 
 module.exports = storyController;
