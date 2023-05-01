@@ -13,17 +13,11 @@ const statusSchema = new Schema(
       type: Number,
       default: 0,
     },
-    growth_rate: {
+    view: {
       type: Number,
-      min: 0,
-      max: 100,
       default: 0,
     },
-    start_at: {
-      type: Date,
-      required: true,
-    },
-    end_at: {
+    date: {
       type: Date,
       required: true,
     },

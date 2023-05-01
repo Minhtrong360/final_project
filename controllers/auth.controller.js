@@ -40,15 +40,19 @@ authController.loginWithEmail = async (req, res, next) => {
     user.save();
 
     // Update the login count in the Status model
-    const status = await Status.findOne({
-      start_at: { $lte: new Date() },
-      end_at: { $gte: new Date() },
-    });
-    if (status) {
-      status.login += 1;
-      await status.save();
+    const currentDate = moment.utc().startOf("day").format("YYYY-MM-DD");
+    let status = await Status.findOne({ date: currentDate });
+    if (!status) {
+      status = new Status({
+        new_users: [],
+        login: 0,
+        view: 0,
+        date: currentDate,
+      });
     }
-    console.log("status", status);
+
+    status.login += 1;
+    await status.save();
 
     // Response
 

@@ -5,6 +5,8 @@ const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
 const Chapter = require("../models/Chapter");
+const Status = require("../models/Status");
+const moment = require("moment/moment");
 
 let allowGenres = [
   "Action",
@@ -81,7 +83,7 @@ storyController.getStoriesOfUser = catchAsync(async (req, res, next) => {
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 8;
-  console.log("getStoriesOfUser", page, "page", limit, "limit");
+
   // Validation
   const filterConditions = [{ isDelete: false, authorId: userId }];
   if (filter.name) {
@@ -157,6 +159,22 @@ storyController.getSingleStory = catchAsync(async (req, res, next) => {
   if (!story)
     throw new AppError(400, "Story's not found", "Get Single Story Error");
   // Process
+
+  // Update the login count in the Status model
+  const currentDate = moment.utc().startOf("day").format("YYYY-MM-DD");
+  let status = await Status.findOne({ date: currentDate });
+  if (!status) {
+    status = new Status({
+      new_users: [],
+      login: 0,
+      view: 0,
+      date: currentDate,
+    });
+  }
+
+  status.view += 1;
+  await status.save();
+
   story.view += 1;
   story.save();
   // Response

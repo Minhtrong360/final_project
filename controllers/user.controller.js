@@ -29,15 +29,19 @@ userController.register = catchAsync(async (req, res, next) => {
   user.save();
 
   // Update the new_user field in the Status model
-  const registerTime = new Date();
-  const status = await Status.findOne({
-    start_at: { $lte: registerTime },
-    end_at: { $gte: registerTime },
-  });
-  if (status) {
-    status.new_users.push(user._id);
-    await status.save();
+  const currentDate = moment.utc().startOf("day").format("YYYY-MM-DD");
+  let status = await Status.findOne({ date: currentDate });
+  if (!status) {
+    status = new Status({
+      new_users: [],
+      login: 0,
+      view: 0,
+      date: currentDate,
+    });
   }
+
+  status.new_users.push(user._id);
+  await status.save();
 
   // Response
 
@@ -57,6 +61,7 @@ userController.getUsers = catchAsync(async (req, res, next) => {
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
+
   // Validation
   const filterConditions = [{ isDelete: false }];
   if (filter.name) {
