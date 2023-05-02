@@ -8,24 +8,6 @@ const Chapter = require("../models/Chapter");
 const Status = require("../models/Status");
 const moment = require("moment/moment");
 
-let allowGenres = [
-  "Action",
-  "Adventure",
-  "Chuyển sinh",
-  "Comedy",
-  "Cổ đại",
-  "Drama",
-  "Fantasy",
-  "Manhwa",
-  "Magic",
-  "Mystery",
-  "Ngôn tình",
-  "Thể thao",
-  "Trọng sinh",
-  "Truyện màu",
-  "Xuyên không",
-];
-
 const storyController = {};
 
 const calculateStoryCount = async (userId) => {
@@ -462,58 +444,5 @@ storyController.deleteAllStories = catchAsync(async (req, res, next) => {
 
 //   sendResponse(res, 200, true, { stories }, null, "Get Stories Successfully");
 // });
-
-// Genres
-storyController.getGenres = catchAsync(async (req, res, next) => {
-  // Get data from request
-  let currentUserId = req.userId;
-
-  // Validation
-  const isAdmin = await User.findById(currentUserId);
-  if (isAdmin.admin === true) {
-    sendResponse(res, 200, true, allowGenres, null, "Get Genres Successfully");
-  } else {
-    throw new AppError(401, "Admin requird", "Get Genres Error");
-  }
-});
-
-storyController.postGenre = catchAsync(async (req, res, next) => {
-  // Get data from request
-  let currentUserId = req.userId;
-
-  // Validation
-  const isAdmin = await User.findById(currentUserId);
-  if (isAdmin.admin === true) {
-    let newGenres = req.body.genresName;
-    allowGenres.push(newGenres);
-    console.log("allowGenres", allowGenres);
-    sendResponse(res, 200, true, allowGenres, null, "Post Genres Successfully");
-  } else {
-    throw new AppError(401, "Admin requird", "Post Genres Error");
-  }
-});
-
-storyController.deleteGenre = catchAsync(async (req, res, next) => {
-  // Get data from request
-  let currentUserId = req.userId;
-
-  // Validation
-  const isAdmin = await User.findById(currentUserId);
-  if (isAdmin.admin === true) {
-    let newGenres = req.body.genresName;
-    allowGenres = allowGenres.filter((genre) => genre !== newGenres); // remove newGenres from allowGenres
-    console.log("allowGenres", allowGenres);
-    sendResponse(
-      res,
-      200,
-      true,
-      allowGenres,
-      null,
-      "Delete Genres Successfully"
-    );
-  } else {
-    throw new AppError(401, "Admin required", "Delete Genres Error");
-  }
-});
 
 module.exports = storyController;

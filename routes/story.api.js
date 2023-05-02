@@ -26,23 +26,6 @@ router.get(
   storyController.getLovedStoriesOfUser
 );
 
-// Genres
-router.get("/genres", authentication.loginRequired, storyController.getGenres);
-
-router.post(
-  "/genres",
-  authentication.loginRequired,
-  validators.validate([body("genresName", "Missing info").exists().notEmpty()]),
-  storyController.postGenre
-);
-
-router.delete(
-  "/genres",
-  authentication.loginRequired,
-  validators.validate([body("genresName", "Missing info").exists().notEmpty()]),
-  storyController.deleteGenre
-);
-
 /**
  * @route GET /stories/:id
  * @description Get a single story

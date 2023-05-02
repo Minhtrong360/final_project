@@ -29,4 +29,8 @@ router.use("/chapters", chapterApi);
 const statusApi = require("./status.api");
 router.use("/status", statusApi);
 
+//genresApi
+const genresApi = require("./genres.api");
+router.use("/genres", genresApi);
+
 module.exports = router;
