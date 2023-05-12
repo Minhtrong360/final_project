@@ -60,7 +60,7 @@ userController.getUsers = catchAsync(async (req, res, next) => {
   let currentUserId = req.userId;
   let { page, limit, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
+  limit = parseInt(limit) || 4;
 
   // Validation
   const filterConditions = [{ isDelete: false }];
